@@ -1,0 +1,223 @@
+📘 Resumo Organizado – Descomplicando Kubernetes
+🔹 1. Conceitos Fundamentais
+Container
+
+Isolamento de recursos de CPU e memória.
+
+Cada container roda sua própria aplicação e dependências.
+
+Container Runtime
+
+Software responsável por:
+
+Construção das imagens.
+
+Execução dos containers.
+
+Aplicar isolamento via namespaces e cgroups.
+
+Exemplos: containerd, CRI-O, Docker.
+
+OCI — Open Container Initiative
+
+Padrão aberto que define:
+
+Formato de imagem.
+
+Especificação de runtime.
+
+Boa prática para portabilidade entre plataformas.
+
+Kubernetes
+
+Orquestrador de containers.
+
+Trabalha com conceitos de:
+
+Alto nível (Pods, Deployments, Services)
+
+Infraestrutura (Nodes, Control Plane)
+
+🔹 2. Arquitetura do Kubernetes
+Control Plane (Plano de Controle)
+
+Responsável por:
+
+Gerenciar o ciclo de vida do cluster.
+
+Garantir estado desejado.
+
+Manter alta disponibilidade, saúde e escalabilidade.
+
+Componentes:
+
+etcd – Banco de dados distribuído que guarda TODO o estado do cluster.
+
+kube-apiserver – Cérebro do cluster.
+A única entidade que se comunica diretamente com o etcd.
+
+kube-scheduler – Decide onde cada Pod vai rodar.
+
+kube-controller-manager – Controladores que garantem:
+
+Deploys
+
+Réplicas
+
+Estados desejados
+
+Workers Nodes
+
+Onde as aplicações rodam de fato.
+
+Contêm dois componentes principais:
+
+Componentes:
+
+kubelet
+
+Agente que recebe instruções do Control Plane.
+
+Garante que os Pods estejam rodando como definido.
+
+kube-proxy
+
+Responsável pelo roteamento interno.
+
+Faz a comunicação dos Pods com o resto do cluster.
+
+🔹 3. Networking – Portas Importantes
+Componente	Porta
+Kube API Server	6443
+etcd	2379-2380
+Kube Scheduler	10251
+Kubelet	10250
+Kube Controller Manager	10252
+NodePort	30000-32767
+Weave Net	6383-6384 TCP/UDP
+🔹 4. Objetos do Kubernetes
+Pod
+
+Menor unidade do Kubernetes.
+
+Pode conter 1 ou mais containers.
+
+Compartilham:
+
+Rede (mesmo IP),
+
+Volumes,
+
+Configurações.
+
+Service
+
+Exposição de Pods para dentro ou fora do cluster.
+
+Pode ser ClusterIP, NodePort, LoadBalancer.
+
+Deployment
+
+Define como a aplicação deve rodar:
+
+Imagem,
+
+Réplicas,
+
+Estratégias de atualização (rolling update).
+
+ReplicaSet
+
+Garante que a quantidade de Pods desejados esteja sempre disponível.
+
+NodePort
+
+Exponibiliza o serviço externo via uma porta no node (30000+).
+
+Exemplo:
+
+Porta container: 80
+
+Porta NodePort: 30001
+
+Acesso: NODE-IP:30001
+
+🔹 5. Instalação e Ferramentas
+📦 kubectl (Linux)
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/darwin/amd64/kubectl"
+sudo mv ./kubectl /usr/local/bin/kubectl
+sudo chown root: /usr/local/bin/kubectl
+kubectl version --client
+
+🐳 Kind (Kubernetes in Docker)
+
+Ambiente leve para estudos.
+
+Instalação:
+
+curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64
+chmod +x ./kind
+sudo mv ./kind /usr/local/bin/kind
+kind --version
+
+🔹 6. Exemplos e Resultados de Comandos
+Namespaces
+kubectl get namespaces
+
+Pods do kube-system
+kubectl get pods -n kube-system
+kubectl get pods -A
+kubectl get pods -n kube-system -o wide
+
+Deployments
+kubectl get deployment -A
+
+ReplicaSets
+kubectl get replicaset -A
+
+Criando Pods com dry-run
+kubectl run meu-nginx --image nginx --port 80 --dry-run=client -o yaml > pod-template.yaml
+kubectl create -f pod-template.yaml
+
+🔹 7. Construção do Cluster
+
+Você estudou que:
+
+O Master (Control Plane) administra tudo.
+
+Os Workers recebem workloads e executam as aplicações.
+
+Você vai aprender:
+
+Criar cluster (testes e produção)
+
+Snapshots do etcd
+
+Upgrades
+
+Deployments e troubleshooting
+
+🐧 Lista de Comandos Linux/Kubernetes Aprendidos
+Gerais (Linux)
+ls
+cd
+chmod +x
+curl -Lo
+mv
+
+Kubernetes
+kubectl get nodes
+kubectl get namespaces
+kubectl get pods -A
+kubectl get pods -n kube-system -o wide
+kubectl get service
+kubectl get replicaset -A
+kubectl get deployment -A
+kubectl completion -h
+
+# Criando pod com template
+kubectl run <nome> --image <imagem> --port <porta> --dry-run=client -o yaml > pod.yaml
+kubectl create -f pod.yaml
+
+Kind
+kind --version
